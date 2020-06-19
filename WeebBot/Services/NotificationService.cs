@@ -15,6 +15,8 @@ namespace WeebBot.Services
 		private readonly DiscordSocketClient _discord;
 		private readonly IServiceProvider _services;
 
+		//private Dictionary<string, RSSFeed> feeds;
+
 		public NotificationService(IServiceProvider services)
 		{
 			_discord = services.GetRequiredService<DiscordSocketClient>();
@@ -24,11 +26,12 @@ namespace WeebBot.Services
 			List<Timer> timers = new List<Timer>();
 
 			feeds.Add(new RSSFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915"));
-
+			/*
 			foreach(RSSFeed f in feeds)
 			{
 				timers.Add(new Timer(f.PrintFeedItems, null, 1000, 1000));
 			}
+			*/
 		}
 
 
