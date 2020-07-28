@@ -52,7 +52,7 @@ namespace WeebBot
 			Feed = SyndicationFeed.Load(reader);
 			reader.Close();
 
-			if(oldFeed != Feed)
+			if(oldFeed != null && oldFeed != Feed)
 			{
 				OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
 			}
