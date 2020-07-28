@@ -23,9 +23,9 @@ namespace WeebBot
 			FeedUrl = feedUrl;
 			SubscribedGuildUsers = new Dictionary<ulong, HashSet<ulong>>();
 
-			Timer = new Timer(PrintFeedItems, null, 1000, 1000);
+			Timer = new Timer(Read, null, 5000, 3600000); //read every hour
 
-			Read();
+			//Read();
 		}
 
 		public bool AddSubscribedGuildUser(ulong guildId, ulong userId)
@@ -46,7 +46,7 @@ namespace WeebBot
 			return SubscribedGuildUsers[guildId].Remove(userId);
 		}
 
-		public void Read()
+		public void Read(Object stateInfo)
 		{
 			XmlReader reader = XmlReader.Create(FeedUrl);
 			SyndicationFeed oldFeed = Feed;
@@ -55,7 +55,7 @@ namespace WeebBot
 
 			if(oldFeed != Feed)
 			{
-				OnUpdated(new FeedUpdateArgs(Feed));
+				OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
 			}
 		}
 
@@ -85,10 +85,12 @@ namespace WeebBot
 	public class FeedUpdateArgs : EventArgs
 	{
 		public SyndicationFeed Feed { get; set; }
+		public Dictionary<ulong, HashSet<ulong>> SubscribedGuildUsers { get; set; } 
 
-		public FeedUpdateArgs(SyndicationFeed feed)
+		public FeedUpdateArgs(SyndicationFeed feed, Dictionary<ulong, HashSet<ulong>> subscribedGuildUsers)
 		{
 			Feed = feed;
+			SubscribedGuildUsers = subscribedGuildUsers;
 		}
 	}
 }
