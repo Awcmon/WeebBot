@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading;
 using System.Xml;
@@ -53,7 +54,7 @@ namespace WeebBot
 			Feed = SyndicationFeed.Load(reader);
 			reader.Close();
 
-			if(oldFeed != null && oldFeed != Feed)
+			if(oldFeed != null && oldFeed.Items.First().Title != Feed.Items.First().Title)
 			{
 				OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
 			}
