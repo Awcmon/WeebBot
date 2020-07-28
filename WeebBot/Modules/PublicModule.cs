@@ -13,6 +13,7 @@ namespace WeebBot.Modules
 		public PictureService PictureService { get; set; }
 		public NotificationService NotificationService { get; set; }
 
+		[RequireUserPermission(GuildPermission.Administrator)]
 		[Command("set")]
 		public async Task SetAsync()
 		{
