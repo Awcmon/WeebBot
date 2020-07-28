@@ -24,15 +24,27 @@ namespace WeebBot.Modules
 		[Command("sub")]
 		public async Task SubAsync([Remainder] string url)
 		{
-			NotificationService.SubUserToFeed(Context.Guild.Id, Context.User.Id, url);
-			await ReplyAsync($"Subscribed {Context.User.Username} to {url}.");
+			if(NotificationService.SubUserToFeed(Context.Guild.Id, Context.User.Id, url))
+			{
+				await ReplyAsync($"Subscribed {Context.User.Username} to {url}.");
+			}
+			else
+			{
+				await ReplyAsync($"Was not able to {Context.User.Username} to url.");
+			}
 		}
 
 		[Command("unsub")]
 		public async Task UnsubAsync([Remainder] string url)
 		{
-			NotificationService.UnsubUserFromFeed(Context.Guild.Id, Context.User.Id, url);
-			await ReplyAsync($"Unsubscribed {Context.User.Username} from {url}.");
+			if(NotificationService.UnsubUserFromFeed(Context.Guild.Id, Context.User.Id, url))
+			{
+				await ReplyAsync($"Unsubscribed {Context.User.Username} from {url}.");
+			}
+			else
+			{
+				await ReplyAsync($"Was not able to unsubscribe {Context.User.Username} from url.");
+			}
 		}
 
 		[Command("list")]
