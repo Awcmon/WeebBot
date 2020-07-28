@@ -45,6 +45,7 @@ namespace WeebBot
 			return SubscribedGuildUsers[guildId].Remove(userId);
 		}
 
+		//Note: if the bot goes down, it will not give any notifications for anything new that came up while it was down.
 		public void Read(Object stateInfo)
 		{
 			XmlReader reader = XmlReader.Create(FeedUrl);
