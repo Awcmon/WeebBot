@@ -23,7 +23,7 @@ namespace WeebBot.Services
 		private Dictionary<ulong, ulong> channelIDOfGuildID;
 		private Dictionary<ulong, ISocketMessageChannel> channelOfGuildID;
 
-		private const string feedsFileName = @"feeds.json";
+		private const string feedsFileName = @"feeds";
 		private const string channelsFileName = @"guildchannels";
 
 		public NotificationService(IServiceProvider services)
@@ -107,22 +107,34 @@ namespace WeebBot.Services
 
 		private void SerializeFeeds()
 		{
-			//File.WriteAllText(@"feeds.json", JsonSerializer.Serialize(feeds));
+			string output = "";
+			foreach(string url in feeds.Keys)
+			{
+				foreach(ulong guildID in feeds[url].SubscribedGuildUsers.Keys)
+				{
+					foreach (ulong userID in feeds[url].SubscribedGuildUsers[guildID])
+					{
+						output += $"{url};{guildID};{userID}\n";
+					}
+				}
+			}
+			File.WriteAllText(feedsFileName, output);
 		}
 
 		private void DeserializeFeeds()
 		{
 			feeds = new Dictionary<string, RSSFeed>();
-			/*
-			if(!File.Exists(feedsFileName))
+			if (File.Exists(feedsFileName))
 			{
-				feeds = new Dictionary<string, RSSFeed>();
+				string[] lines = File.ReadAllLines(feedsFileName);
+				foreach(string line in lines)
+				{
+					string[] args = line.Split(';');
+					if(args.Length != 3) { Console.WriteLine("Feeds file is incorrect."); return; }
+
+					SubUserToFeed(UInt64.Parse(args[1]), UInt64.Parse(args[2]), args[0]);
+				}
 			}
-			else
-			{
-				feeds = JsonSerializer.Deserialize<Dictionary<string, RSSFeed>>(File.ReadAllText(feedsFileName));
-			}
-			*/
 		}
 
 		private Dictionary<ulong, ulong> DeserializeGuildChannelMap(string[] lines)
