@@ -15,25 +15,53 @@ namespace WeebBot.Services
 		private readonly DiscordSocketClient _discord;
 		private readonly IServiceProvider _services;
 
-		//private Dictionary<string, RSSFeed> feeds;
+		private Dictionary<string, RSSFeed> feeds;
+		private Dictionary<ulong, ulong> channelOfGuild;
 
 		public NotificationService(IServiceProvider services)
 		{
 			_discord = services.GetRequiredService<DiscordSocketClient>();
 			_services = services;
 
-			List<RSSFeed> feeds = new List<RSSFeed>();
-			List<Timer> timers = new List<Timer>();
+			feeds = new Dictionary<string, RSSFeed>();
 
-			feeds.Add(new RSSFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915"));
-			/*
-			foreach(RSSFeed f in feeds)
-			{
-				timers.Add(new Timer(f.PrintFeedItems, null, 1000, 1000));
-			}
-			*/
+			AddFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915");
 		}
 
+		public bool AddFeed(string url)
+		{
+			return feeds.TryAdd(url, new RSSFeed(url));
+		}
+
+		public bool RemoveFeed(string url)
+		{
+			return feeds.Remove(url);
+		}
+
+		public bool SubUserToFeed(ulong guildId, ulong userId, string url)
+		{
+			if(feeds.ContainsKey(url))
+			{
+				return feeds[url].AddSubscribedGuildUser(guildId, userId);
+			}
+			return false;
+		}
+
+		public bool UnsubUserFromFeed(ulong guildId, ulong userId, string url)
+		{
+			if (feeds.ContainsKey(url))
+			{
+				return feeds[url].RemoveSubscribedGuildUser(guildId, userId);
+			}
+			return false;
+		}
+
+		public void SetGuildChannel(ISocketMessageChannel channel)
+		{
+			channelOfGuild[(channel as SocketGuildChannel).Guild.Id] = channel.Id;
+			//System.IO.File.WriteAllText(channelsFileName, SerializeGuildChannelMap());
+			//await channel.SendMessageAsync(String.Format("This channel will now be used for {0} posts.", _subredditName));
+		}
 
 	}
 }

@@ -61,11 +61,7 @@ namespace WeebBot
 
 		protected void OnUpdated(FeedUpdateArgs e)
 		{
-			EventHandler<FeedUpdateArgs> handler = Updated;
-			if(handler != null)
-			{
-				handler(this, e);
-			}
+			Updated?.Invoke(this, e);
 		}
 
 		public void PrintFeedItems(Object stateInfo)
