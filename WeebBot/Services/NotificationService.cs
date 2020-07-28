@@ -93,7 +93,7 @@ namespace WeebBot.Services
 			string output = "```";
 			foreach(string url in feeds.Keys)
 			{
-				if(feeds[url].SubscribedGuildUsers[guildID].Contains(userID))
+				if(feeds[url].SubscribedGuildUsers.ContainsKey(guildID) && feeds[url].SubscribedGuildUsers[guildID].Contains(userID))
 				{
 					output += $"{url}\n";
 				}
