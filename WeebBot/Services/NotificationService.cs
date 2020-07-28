@@ -8,6 +8,9 @@ using Discord.WebSocket;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.IO;
 
 namespace WeebBot.Services
 {
@@ -20,21 +23,28 @@ namespace WeebBot.Services
 		private Dictionary<ulong, ulong> channelIDOfGuildID;
 		private Dictionary<ulong, ISocketMessageChannel> channelOfGuildID;
 
+		private const string feedsFileName = @"feeds.json";
+		private const string channelsFileName = @"guildchannels";
+
 		public NotificationService(IServiceProvider services)
 		{
 			_discord = services.GetRequiredService<DiscordSocketClient>();
 			_services = services;
 
-			feeds = new Dictionary<string, RSSFeed>();
+			//feeds = new Dictionary<string, RSSFeed>();
 
-			if (!System.IO.File.Exists(@"guildchannels"))
+			if (!System.IO.File.Exists(channelsFileName))
 			{
 				channelIDOfGuildID = new Dictionary<ulong, ulong>();
 			}
 			else
 			{
-				channelIDOfGuildID = DeserializeGuildChannelMap(System.IO.File.ReadAllLines(@"guildchannels"));
+				channelIDOfGuildID = DeserializeGuildChannelMap(System.IO.File.ReadAllLines(channelsFileName));
 			}
+
+			DeserializeFeeds();
+
+			UpdateChannels();
 
 			//AddFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915");
 		}
@@ -57,18 +67,23 @@ namespace WeebBot.Services
 
 		public bool SubUserToFeed(ulong guildId, ulong userId, string url)
 		{
-			if(feeds.ContainsKey(url))
+			if(!feeds.ContainsKey(url))
 			{
-				return feeds[url].AddSubscribedGuildUser(guildId, userId);
+				AddFeed(url);
 			}
-			return false;
+			bool ret = feeds[url].AddSubscribedGuildUser(guildId, userId);
+			SerializeFeeds();
+			return ret;
 		}
 
+		//TODO: Remove feed if no more users?
 		public bool UnsubUserFromFeed(ulong guildId, ulong userId, string url)
 		{
 			if (feeds.ContainsKey(url))
 			{
-				return feeds[url].RemoveSubscribedGuildUser(guildId, userId);
+				bool ret = feeds[url].RemoveSubscribedGuildUser(guildId, userId);
+				SerializeFeeds();
+				return ret;
 			}
 			return false;
 		}
@@ -76,7 +91,7 @@ namespace WeebBot.Services
 		public void SetGuildChannel(ISocketMessageChannel channel)
 		{
 			channelIDOfGuildID[(channel as SocketGuildChannel).Guild.Id] = channel.Id;
-			//System.IO.File.WriteAllText(channelsFileName, SerializeGuildChannelMap());
+			System.IO.File.WriteAllText(channelsFileName, SerializeGuildChannelMap());
 			//await channel.SendMessageAsync(String.Format("This channel will now be used for {0} posts.", _subredditName));
 		}
 
@@ -88,6 +103,26 @@ namespace WeebBot.Services
 				output += k + "," + channelIDOfGuildID[k] + "\n";
 			}
 			return output;
+		}
+
+		private void SerializeFeeds()
+		{
+			//File.WriteAllText(@"feeds.json", JsonSerializer.Serialize(feeds));
+		}
+
+		private void DeserializeFeeds()
+		{
+			feeds = new Dictionary<string, RSSFeed>();
+			/*
+			if(!File.Exists(feedsFileName))
+			{
+				feeds = new Dictionary<string, RSSFeed>();
+			}
+			else
+			{
+				feeds = JsonSerializer.Deserialize<Dictionary<string, RSSFeed>>(File.ReadAllText(feedsFileName));
+			}
+			*/
 		}
 
 		private Dictionary<ulong, ulong> DeserializeGuildChannelMap(string[] lines)
@@ -143,6 +178,8 @@ namespace WeebBot.Services
 
 		private async void Notify(object sender, FeedUpdateArgs args)
 		{
+			UpdateChannels();
+
 			foreach(ulong guildID in args.SubscribedGuildUsers.Keys)
 			{
 				string mentions = "";

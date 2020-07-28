@@ -18,13 +18,17 @@ namespace WeebBot
 
 		public Dictionary<ulong, HashSet<ulong>> SubscribedGuildUsers; //maps guild to users in that guild
 
-		public RSSFeed(string feedUrl)
+		public RSSFeed()
 		{
-			FeedUrl = feedUrl;
 			SubscribedGuildUsers = new Dictionary<ulong, HashSet<ulong>>();
 
 			Timer = new Timer(Read, null, 5000, 3600000); //read every hour
+		}
 
+		public RSSFeed(string feedUrl) : this()
+		{
+			FeedUrl = feedUrl;
+			
 			//Read();
 		}
 

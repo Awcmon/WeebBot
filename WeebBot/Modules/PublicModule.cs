@@ -66,5 +66,27 @@ namespace WeebBot.Modules
 		[RequireContext(ContextType.Guild, ErrorMessage = "Sorry, this command must be ran from within a server, not a DM!")]
 		public Task GuildOnlyCommand()
 			=> ReplyAsync("Nothing to see here!");
+
+		[Command("set")]
+		public async Task SetAsync()
+		{
+			NotificationService.SetGuildChannel(Context.Channel);
+			await ReplyAsync("Set this channel to be used for notifications.");
+		}
+
+		[Command("sub")]
+		public async Task SubAsync([Remainder] string url)
+		{
+			NotificationService.SubUserToFeed(Context.Guild.Id, Context.User.Id, url);
+			await ReplyAsync($"Subscribed {Context.User.Username} to {url}.");
+		}
+
+		[Command("unsub")]
+		public async Task UnsubAsync([Remainder] string url)
+		{
+			NotificationService.UnsubUserFromFeed(Context.Guild.Id, Context.User.Id, url);
+			await ReplyAsync($"Unsubscribed {Context.User.Username} from {url}.");
+		}
+		//TODO: List
 	}
 }
