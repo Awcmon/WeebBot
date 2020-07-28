@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using WeebBot.Services;
+using System.ServiceModel.Syndication;
+using System.Xml;
 
 
 namespace WeebBot.Modules
@@ -24,13 +26,27 @@ namespace WeebBot.Modules
 		[Command("sub")]
 		public async Task SubAsync([Remainder] string url)
 		{
-			if(NotificationService.SubUserToFeed(Context.Guild.Id, Context.User.Id, url))
+			XmlReader reader = XmlReader.Create(url);
+			try
 			{
-				await ReplyAsync($"Subscribed {Context.User.Username} to {url}.");
+				SyndicationFeed feed = SyndicationFeed.Load(reader);
+
+				if (NotificationService.SubUserToFeed(Context.Guild.Id, Context.User.Id, url))
+				{
+					await ReplyAsync($"Subscribed {Context.User.Username} to {feed.Title.Text}");
+				}
+				else
+				{
+					await ReplyAsync($"Was not able to subscribe {Context.User.Username} to url. Perhaps you are already subscribed?");
+				}
 			}
-			else
+			catch(System.Exception e)
 			{
-				await ReplyAsync($"Was not able to {Context.User.Username} to url.");
+				await ReplyAsync($"Something went wrong. It probably wasn't a RSS feed url.");
+			}
+			finally
+			{
+				reader.Close();
 			}
 		}
 
@@ -39,7 +55,7 @@ namespace WeebBot.Modules
 		{
 			if(NotificationService.UnsubUserFromFeed(Context.Guild.Id, Context.User.Id, url))
 			{
-				await ReplyAsync($"Unsubscribed {Context.User.Username} from {url}.");
+				await ReplyAsync($"Unsubscribed {Context.User.Username} from {url}");
 			}
 			else
 			{
