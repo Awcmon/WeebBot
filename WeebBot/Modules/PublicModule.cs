@@ -33,6 +33,11 @@ namespace WeebBot.Modules
 			NotificationService.UnsubUserFromFeed(Context.Guild.Id, Context.User.Id, url);
 			await ReplyAsync($"Unsubscribed {Context.User.Username} from {url}.");
 		}
-		//TODO: List
+
+		[Command("list")]
+		public async Task ListAsync()
+		{
+			await ReplyAsync(Context.User.Username + "\n" + NotificationService.ListFeeds(Context.Guild.Id, Context.User.Id));
+		}
 	}
 }

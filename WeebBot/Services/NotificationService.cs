@@ -88,6 +88,20 @@ namespace WeebBot.Services
 			return false;
 		}
 
+		public string ListFeeds(ulong guildID, ulong userID)
+		{
+			string output = "```";
+			foreach(string url in feeds.Keys)
+			{
+				if(feeds[url].SubscribedGuildUsers[guildID].Contains(userID))
+				{
+					output += $"{url}\n";
+				}
+			}
+			output += "```";
+			return output;
+		}
+
 		public void SetGuildChannel(ISocketMessageChannel channel)
 		{
 			channelIDOfGuildID[(channel as SocketGuildChannel).Guild.Id] = channel.Id;
@@ -194,13 +208,13 @@ namespace WeebBot.Services
 
 			foreach(ulong guildID in args.SubscribedGuildUsers.Keys)
 			{
-				string mentions = "";
+				string mentions = args.Feed.Items.First().Title.Text + "\n";
 				foreach(ulong userID in args.SubscribedGuildUsers[guildID])
 				{
 					mentions += (channelOfGuildID[guildID] as SocketGuildChannel).GetUser(userID).Mention + " ";
 				}
 				//TODO: Maybe properly async this lmao
-				await channelOfGuildID[guildID].SendMessageAsync(mentions + args.Feed.Items.First()?.Links.First()?.GetAbsoluteUri());
+				await channelOfGuildID[guildID].SendMessageAsync(mentions + "\n" + args.Feed.Items.First()?.Links.First()?.GetAbsoluteUri());
 			}
 		}
 
