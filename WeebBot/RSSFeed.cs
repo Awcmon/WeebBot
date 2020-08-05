@@ -19,13 +19,14 @@ namespace WeebBot
 
 		public Dictionary<ulong, HashSet<ulong>> SubscribedGuildUsers; //maps guild to users in that guild
 
-		private DateTimeOffset? lastPublishDateTime;
+		//private DateTimeOffset? lastPublishDateTime;
+		private string lastItemTitle;
 
 		public RSSFeed(string feedUrl)
 		{
 			FeedUrl = feedUrl;
 
-			lastPublishDateTime = null;
+			lastItemTitle = null;
 
 			SubscribedGuildUsers = new Dictionary<ulong, HashSet<ulong>>();
 
@@ -57,12 +58,11 @@ namespace WeebBot
 			Feed = SyndicationFeed.Load(reader);
 			reader.Close();
 
-			if(lastPublishDateTime != null && lastPublishDateTime < Feed.Items.First().PublishDate)
+			if(lastItemTitle != null && lastItemTitle != Feed.Items.First().Title.Text)
 			{
 				OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
 			}
-
-			lastPublishDateTime = Feed.Items.First().PublishDate;
+			lastItemTitle = Feed.Items.First().Title.Text;
 		}
 
 		protected void OnUpdated(FeedUpdateArgs e)
