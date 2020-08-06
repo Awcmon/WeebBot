@@ -56,7 +56,7 @@ namespace WeebBot
 		//Note: if the bot goes down, it will not give any notifications for anything new that came up while it was down.
 		public void Read(Object stateInfo)
 		{
-			Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updating {FeedUrl}");
+			//Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updating {FeedUrl}");
 			try
 			{
 				XmlReader reader = XmlReader.Create(FeedUrl);
@@ -68,7 +68,7 @@ namespace WeebBot
 					OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
 				}
 				lastItemTitle = Feed.Items.First().Title.Text;
-				Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updated {FeedUrl}: {Feed.Title.Text}");
+				//Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updated {FeedUrl}: {Feed.Title.Text}");
 			}
 			catch (Exception e)
 			{
