@@ -42,9 +42,16 @@ namespace WeebBot.Services
 
 			DeserializeFeeds();
 
+			_discord.Ready += OnReady;
+			
+			//AddFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915");
+		}
+
+		private Task OnReady()
+		{
 			UpdateChannelMap();
 
-			//AddFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915");
+			return Task.CompletedTask;
 		}
 
 		public bool AddFeed(string url)

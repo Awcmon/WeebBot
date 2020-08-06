@@ -70,7 +70,7 @@ namespace WeebBot
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Exception when reading {FeedUrl}. \n{e.ToString()}");
+				Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Exception when reading {FeedUrl} \n{e.ToString()}");
 			}
 		}
 
