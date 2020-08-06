@@ -59,15 +59,17 @@ namespace WeebBot
 			//Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updating {FeedUrl}");
 			try
 			{
-				XmlReader reader = XmlReader.Create(FeedUrl);
-				Feed = SyndicationFeed.Load(reader);
-				reader.Close();
-
-				if (lastItemTitle != null && lastItemTitle != Feed.Items.First().Title.Text)
+				using (XmlReader reader = XmlReader.Create(FeedUrl))
 				{
-					OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
+					Feed = SyndicationFeed.Load(reader);
+					//reader.Close();
+
+					if (lastItemTitle != null && lastItemTitle != Feed.Items.First().Title.Text)
+					{
+						OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
+					}
+					lastItemTitle = Feed.Items.First().Title.Text;
 				}
-				lastItemTitle = Feed.Items.First().Title.Text;
 				//Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updated {FeedUrl}: {Feed.Title.Text}");
 			}
 			catch (Exception e)
