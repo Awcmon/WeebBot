@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Discord.Net;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading;
@@ -54,15 +56,22 @@ namespace WeebBot
 		//Note: if the bot goes down, it will not give any notifications for anything new that came up while it was down.
 		public void Read(Object stateInfo)
 		{
-			XmlReader reader = XmlReader.Create(FeedUrl);
-			Feed = SyndicationFeed.Load(reader);
-			reader.Close();
-
-			if(lastItemTitle != null && lastItemTitle != Feed.Items.First().Title.Text)
+			try
 			{
-				OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
+				XmlReader reader = XmlReader.Create(FeedUrl);
+				Feed = SyndicationFeed.Load(reader);
+				reader.Close();
+
+				if (lastItemTitle != null && lastItemTitle != Feed.Items.First().Title.Text)
+				{
+					OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
+				}
+				lastItemTitle = Feed.Items.First().Title.Text;
 			}
-			lastItemTitle = Feed.Items.First().Title.Text;
+			catch (Exception e)
+			{
+				Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Exception when reading {FeedUrl}. \n{e.ToString()}");
+			}
 		}
 
 		protected void OnUpdated(FeedUpdateArgs e)

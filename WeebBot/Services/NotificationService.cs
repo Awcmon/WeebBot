@@ -42,7 +42,7 @@ namespace WeebBot.Services
 
 			DeserializeFeeds();
 
-			UpdateChannels();
+			UpdateChannelMap();
 
 			//AddFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915");
 		}
@@ -164,9 +164,9 @@ namespace WeebBot.Services
 			return output;
 		}
 
-		public void UpdateChannels()
+		public void UpdateChannelMap()
 		{
-			Console.WriteLine("Updating channels.");
+			Console.WriteLine("Updating channel map.");
 
 			channelOfGuildID = new Dictionary<ulong, ISocketMessageChannel>();
 
@@ -202,7 +202,7 @@ namespace WeebBot.Services
 
 		private async void Notify(object sender, FeedUpdateArgs args)
 		{
-			UpdateChannels();
+			UpdateChannelMap();
 
 			foreach(ulong guildID in args.SubscribedGuildUsers.Keys)
 			{
