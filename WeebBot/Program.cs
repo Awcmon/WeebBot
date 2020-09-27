@@ -55,7 +55,6 @@ namespace WeebBot
 				.AddSingleton<CommandService>()
 				.AddSingleton<CommandHandlingService>()
 				.AddSingleton<HttpClient>()
-				.AddSingleton<PictureService>()
 				.AddSingleton<NotificationService>()
 				.BuildServiceProvider();
 		}
