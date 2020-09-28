@@ -12,7 +12,6 @@ namespace WeebBot.Modules
 	public class PublicModule : ModuleBase<SocketCommandContext>
 	{
 		// Dependency Injection will fill this value in for us
-		public PictureService PictureService { get; set; }
 		public NotificationService NotificationService { get; set; }
 
 		[RequireUserPermission(GuildPermission.Administrator)]
