@@ -67,7 +67,13 @@ namespace WeebBot.Services
 
 		public bool RemoveFeed(string url)
 		{
-			return feeds.Remove(url);
+			if(feeds.ContainsKey(url))
+			{
+				feeds[url].Timer.Dispose();
+				feeds[url].Updated -= Notify;
+				return feeds.Remove(url);
+			}
+			return false;
 		}
 
 		public bool SubUserToFeed(ulong guildId, ulong userId, string url)
@@ -81,12 +87,18 @@ namespace WeebBot.Services
 			return ret;
 		}
 
-		//TODO: Remove feed if no more users?
 		public bool UnsubUserFromFeed(ulong guildId, ulong userId, string url)
 		{
 			if (feeds.ContainsKey(url))
 			{
 				bool ret = feeds[url].RemoveSubscribedGuildUser(guildId, userId);
+
+				//if the feed no longer has subscribers, remove it from the feeds.
+				if(!feeds[url].HasSubscribers())
+				{
+					RemoveFeed(url);
+				}
+
 				SerializeFeeds();
 				return ret;
 			}

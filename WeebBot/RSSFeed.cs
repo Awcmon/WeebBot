@@ -84,6 +84,18 @@ namespace WeebBot
 			Updated?.Invoke(this, e);
 		}
 
+		public bool HasSubscribers()
+		{
+			foreach(HashSet<ulong> userSet in SubscribedGuildUsers.Values)
+			{
+				foreach(ulong userId in userSet)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public void PrintFeedItems(Object stateInfo)
 		{
 			foreach (SyndicationItem item in Feed.Items)
