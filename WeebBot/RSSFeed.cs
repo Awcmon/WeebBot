@@ -24,7 +24,7 @@ namespace WeebBot
 		//private DateTimeOffset? lastPublishDateTime;
 		private string lastItemTitle;
 
-		public RSSFeed(string feedUrl)
+		public RSSFeed(string feedUrl, int delayOrder)
 		{
 			FeedUrl = feedUrl;
 
@@ -32,7 +32,7 @@ namespace WeebBot
 
 			SubscribedGuildUsers = new Dictionary<ulong, HashSet<ulong>>();
 
-			Timer = new Timer(Read, null, 5000, 300000); //read every 5 mins w/ 5 sec delay
+			Timer = new Timer(Read, null, 5000*delayOrder, 300000); //read every 5 mins w/ 5 sec delay. Delay each new feed by 5 seconds
 		}
 
 		public bool AddSubscribedGuildUser(ulong guildId, ulong userId)
@@ -56,7 +56,7 @@ namespace WeebBot
 		//Note: if the bot goes down, it will not give any notifications for anything new that came up while it was down.
 		public void Read(Object stateInfo)
 		{
-			//Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updating {FeedUrl}");
+			Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updating {FeedUrl}");
 			try
 			{
 				using (XmlReader reader = XmlReader.Create(FeedUrl))

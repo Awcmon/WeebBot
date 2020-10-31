@@ -24,8 +24,12 @@ namespace WeebBot.Services
 		private const string feedsFileName = @"feeds";
 		private const string channelsFileName = @"guildchannels";
 
+		private int feedsAdded;
+
 		public NotificationService(IServiceProvider services)
 		{
+			feedsAdded = 0;
+
 			_discord = services.GetRequiredService<DiscordSocketClient>();
 			_services = services;
 
@@ -56,11 +60,12 @@ namespace WeebBot.Services
 
 		public bool AddFeed(string url)
 		{
-			RSSFeed feed = new RSSFeed(url);
+			RSSFeed feed = new RSSFeed(url, feedsAdded);
 			bool ret = feeds.TryAdd(url, feed);
 			if(ret)
 			{
 				feed.Updated += Notify;
+				feedsAdded++;
 			}
 			return ret;
 		}
