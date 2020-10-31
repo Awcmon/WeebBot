@@ -107,7 +107,7 @@ namespace WeebBot.Services
 
 		public string ListFeeds(ulong guildID, ulong userID)
 		{
-			string output = "```";
+			string output = "```\n";
 			foreach(string url in feeds.Keys)
 			{
 				if(feeds[url].SubscribedGuildUsers.ContainsKey(guildID) && feeds[url].SubscribedGuildUsers[guildID].Contains(userID))
