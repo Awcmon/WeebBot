@@ -32,7 +32,7 @@ namespace WeebBot
 
 			SubscribedGuildUsers = new Dictionary<ulong, HashSet<ulong>>();
 
-			Timer = new Timer(Read, null, 5000*delayOrder, 300000); //read every 5 mins w/ 5 sec delay. Delay each new feed by 5 seconds
+			Timer = new Timer(Read, null, 5000*(delayOrder+1), 300000); //read every 5 mins w/ 5 sec delay. Delay each new feed by 5 seconds
 		}
 
 		public bool AddSubscribedGuildUser(ulong guildId, ulong userId)
@@ -56,7 +56,7 @@ namespace WeebBot
 		//Note: if the bot goes down, it will not give any notifications for anything new that came up while it was down.
 		public void Read(Object stateInfo)
 		{
-			Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Updating {FeedUrl}");
+			Console.WriteLine($"{DateTime.Now.ToLongTimeString()} Updating {FeedUrl}");
 			try
 			{
 				using (XmlReader reader = XmlReader.Create(FeedUrl))
@@ -82,6 +82,24 @@ namespace WeebBot
 		protected void OnUpdated(FeedUpdateArgs e)
 		{
 			Updated?.Invoke(this, e);
+		}
+
+		public void ForceUpdated()
+		{
+			Console.WriteLine($"{DateTime.Now.ToLongTimeString()} Force notifying {FeedUrl}");
+			try
+			{
+				using (XmlReader reader = XmlReader.Create(FeedUrl))
+				{
+					Feed = SyndicationFeed.Load(reader);
+					OnUpdated(new FeedUpdateArgs(Feed, SubscribedGuildUsers));
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Exception when reading {FeedUrl} \n{e.ToString()}");
+				Console.WriteLine($"{DateTime.UtcNow.ToLongTimeString()} Unable to update {FeedUrl}");
+			}
 		}
 
 		public bool HasSubscribers()
@@ -110,6 +128,24 @@ namespace WeebBot
 				}
 				Console.WriteLine($"\n");
 			}
+		}
+
+		public string FeedMapToString(int tabs = 0)
+		{
+			string ret = "";
+
+			ret += $"{new string('\t', tabs)}{FeedUrl}\n";
+			
+			foreach(ulong guildId in SubscribedGuildUsers.Keys)
+			{
+				ret += $"{new string('\t', tabs+1)}{guildId}\n";
+				foreach(ulong userId in SubscribedGuildUsers[guildId])
+				{
+					ret += $"{new string('\t', tabs+2)}{userId}\n";
+				}
+			}
+
+			return ret;
 		}
 
 	}

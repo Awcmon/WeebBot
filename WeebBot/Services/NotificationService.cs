@@ -212,6 +212,7 @@ namespace WeebBot.Services
 						Console.WriteLine(String.Format("Added channel \"{0}\"({1}) from guild \"{2}\"({3}).", c.Name, c.Id, g.Name, g.Id));
 						added = true;
 						channelOfGuildID.Add(g.Id, c as ISocketMessageChannel);
+						//g.DownloadUsersAsync();
 						break;
 					}
 				}
@@ -233,11 +234,32 @@ namespace WeebBot.Services
 				string mentions = args.Feed.Items.First().Title.Text + "\n";
 				foreach(ulong userID in args.SubscribedGuildUsers[guildID])
 				{
-					mentions += (channelOfGuildID[guildID] as SocketGuildChannel).GetUser(userID).Mention + " ";
+					//SocketGuildChannel guildChannel = (channelOfGuildID[guildID] as SocketGuildChannel);
+					//SocketGuildUser user = guildChannel.GetUser(userID);
+					IUser user = await channelOfGuildID[guildID].GetUserAsync(userID);
+					mentions += (user?.Mention == null ? userID.ToString() : user.Mention) + " ";
 				}
 				//TODO: Maybe properly async this lmao
 				await channelOfGuildID[guildID].SendMessageAsync(mentions + "\n" + args.Feed.Items.First()?.Links.First()?.GetAbsoluteUri());
 			}
+		}
+
+		public string ListAllFeeds()
+		{
+			string ret = "";
+
+			foreach(string k in feeds.Keys)
+			{
+				ret += $"{k}\n";
+				ret += feeds[k].FeedMapToString(1);
+			}
+
+			return ret;
+		}
+
+		public void ForceNotify(string feedId)
+		{
+			feeds?[feedId].ForceUpdated();
 		}
 
 	}

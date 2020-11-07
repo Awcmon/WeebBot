@@ -27,6 +27,8 @@ namespace WeebBot
 				var client = services.GetRequiredService<DiscordSocketClient>();
 
 				client.Log += LogAsync;
+				//client.Connected += ClientConnected;
+
 				services.GetRequiredService<CommandService>().Log += LogAsync;
 
 				// Tokens should be considered secret data and never hard-coded.
@@ -40,6 +42,13 @@ namespace WeebBot
 				await Task.Delay(-1);
 			}
 		}
+
+		/*
+		private Task ClientConnected()
+		{
+			
+		}
+		*/
 
 		private Task LogAsync(LogMessage log)
 		{

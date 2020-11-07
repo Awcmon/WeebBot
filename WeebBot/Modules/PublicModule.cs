@@ -67,5 +67,21 @@ namespace WeebBot.Modules
 		{
 			await ReplyAsync(Context.User.Username + "\n" + NotificationService.ListFeeds(Context.Guild.Id, Context.User.Id));
 		}
+
+		[RequireOwner]
+		[Command("listallfeeds")]
+		public async Task ListAllFeedsAsync()
+		{
+			System.Console.WriteLine(NotificationService.ListAllFeeds());
+			await ReplyAsync($"```\n{NotificationService.ListAllFeeds()}```");
+		}
+
+		[RequireOwner]
+		[Command("forcenotify")]
+		public async Task ForceNotify([Remainder] string feedId)
+		{
+			NotificationService.ForceNotify(feedId);
+			await ReplyAsync($"Force notified feed: {feedId}");
+		}
 	}
 }
