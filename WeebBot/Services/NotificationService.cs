@@ -31,6 +31,7 @@ namespace WeebBot.Services
 			feedsAdded = 0;
 
 			_discord = services.GetRequiredService<DiscordSocketClient>();
+			//_discord.Connected += ClientConnected;
 			_services = services;
 
 			//feeds = new Dictionary<string, RSSFeed>();
@@ -50,6 +51,18 @@ namespace WeebBot.Services
 			
 			//AddFeed("https://mangadex.org/rss/BEWhGNQMDVpTU4CznK9Hskwfu52Pegva/manga_id/31915");
 		}
+
+		/*
+		private Task ClientConnected()
+		{
+			Console.WriteLine("Downloading users");
+			foreach (var g in _discord.Guilds)
+			{
+				g.DownloadUsersAsync();
+			}
+			return Task.CompletedTask;
+		}
+		*/
 
 		private Task OnReady()
 		{
@@ -237,7 +250,7 @@ namespace WeebBot.Services
 					//SocketGuildChannel guildChannel = (channelOfGuildID[guildID] as SocketGuildChannel);
 					//SocketGuildUser user = guildChannel.GetUser(userID);
 					IUser user = await channelOfGuildID[guildID].GetUserAsync(userID);
-					mentions += (user?.Mention == null ? userID.ToString() : user.Mention) + " ";
+					mentions += (user?.Mention == null ? $"M<@{userID}>" : user.Mention) + " ";
 				}
 				//TODO: Maybe properly async this lmao
 				await channelOfGuildID[guildID].SendMessageAsync(mentions + "\n" + args.Feed.Items.First()?.Links.First()?.GetAbsoluteUri());

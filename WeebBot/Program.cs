@@ -27,7 +27,6 @@ namespace WeebBot
 				var client = services.GetRequiredService<DiscordSocketClient>();
 
 				client.Log += LogAsync;
-				//client.Connected += ClientConnected;
 
 				services.GetRequiredService<CommandService>().Log += LogAsync;
 
@@ -42,13 +41,6 @@ namespace WeebBot
 				await Task.Delay(-1);
 			}
 		}
-
-		/*
-		private Task ClientConnected()
-		{
-			
-		}
-		*/
 
 		private Task LogAsync(LogMessage log)
 		{
